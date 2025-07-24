@@ -167,6 +167,12 @@ class ResourceListSerializer(serializers.Serializer):
             tag_str_ids = [str(tag_id) for tag_id in tag_ids]
             attrs["labels"] = tag_str_ids
 
+        # 城市如果是default, 则不需要传default
+        if "default" in attrs.get("city", []):
+            attrs["city"].remove("default")
+            if not attrs["city"]:
+                attrs.pop("city")
+
         # 转换规格查询参数
         if attrs.get("spec_id"):
             spec = Spec.objects.get(spec_id=attrs["spec_id"])
