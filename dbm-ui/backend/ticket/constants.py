@@ -317,6 +317,8 @@ class TicketType(str, StructuredEnum):
     TENDBCLUSTER_SPIDER_REDUCE_NODES = TicketEnumField("TENDBCLUSTER_SPIDER_REDUCE_NODES", _("TenDB Cluster 缩容接入层"), _("集群维护"))  # noqa
     TENDBCLUSTER_SPIDER_MNT_APPLY = TicketEnumField("TENDBCLUSTER_SPIDER_MNT_APPLY", _("TenDB Cluster 添加运维节点"), _("运维 Spider 管理"))  # noqa
     TENDBCLUSTER_SPIDER_MNT_DESTROY = TicketEnumField("TENDBCLUSTER_SPIDER_MNT_DESTROY", _("TenDB Cluster 下架运维节点"), _("运维 Spider 管理"))  # noqa
+    TENDBCLUSTER_LOCAL_UPGRADE = TicketEnumField("TENDBCLUSTER_LOCAL_UPGRADE", _("TenDB Cluster 本地升级"), _("集群维护"))  # noqa
+    TENDBCLUSTER_SPIDER_UPGRADE = TicketEnumField("TENDBCLUSTER_SPIDER_UPGRADE", _("TenDB Cluster Spider迁移升级"), _("集群维护"))  # noqa
     TENDBCLUSTER_SPIDER_SLAVE_APPLY = TicketEnumField("TENDBCLUSTER_SPIDER_SLAVE_APPLY", _("TenDB Cluster 部署只读接入层"), _("访问入口"))  # noqa
     TENDBCLUSTER_SPIDER_SLAVE_DESTROY = TicketEnumField("TENDBCLUSTER_SPIDER_SLAVE_DESTROY", _("TenDB Cluster 只读接入层下架"), _("访问入口"))  # noqa
     TENDBCLUSTER_SPIDER_SWITCH_NODES = TicketEnumField("TENDBCLUSTER_SPIDER_SWITCH_NODES", _("TenDB Cluster 替换接入层"), _("运维 Spider 管理"))  # noqa

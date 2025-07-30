@@ -157,7 +157,7 @@ class ResourceApplyFlow(BaseTicketFlow):
                 "for_biz": host["dedicated_biz"],
                 "labels": host["labels"],
                 "resource_type": host["rs_type"],
-                "spec": spec.get_spec_info()
+                "spec": spec.get_spec_info(),
             }
             for host in hosts
         ]
