@@ -131,6 +131,15 @@ class ResourceApplyFlow(BaseTicketFlow):
 
     def _format_resource_hosts(self, hosts, spec):
         """格式化申请的主机参数"""
+        default_spec = {
+            "id": 0,
+            "name": "",
+            "cpu": "",
+            "mem": "",
+            "qps": "",
+            "device_class": "",
+            "storage_spec": "",
+        }
         return [
             {
                 # 主机来源业务
@@ -157,7 +166,7 @@ class ResourceApplyFlow(BaseTicketFlow):
                 "for_biz": host["dedicated_biz"],
                 "labels": host["labels"],
                 "resource_type": host["rs_type"],
-                "spec": spec.get_spec_info(),
+                "spec": spec.get_spec_info() if isinstance(spec, Spec) else default_spec,
             }
             for host in hosts
         ]
@@ -202,16 +211,21 @@ class ResourceApplyFlow(BaseTicketFlow):
                 _("资源池相关服务出现未知异常，请联系管理员处理。错误信息: [{}]{}").format(resp["code"], resp.get("message"))
             )
 
-        resource_specs = [info["resource_spec"] for info in ticket_data["infos"]]
-        first_key_spec_id_map = {}
-        spec_ids = []
-        for resource_spec in resource_specs:
-            for k, v in resource_spec.items():
-                if not v.get("spec_id"):
-                    continue
-                first_key_spec_id_map[k] = v["spec_id"]
-                spec_ids.append(v["spec_id"])
-        spec_map = {spec.spec_id: spec for spec in Spec.objects.filter(spec_id__in=spec_ids)}
+        resource_specs = (
+            [ticket_data["resource_spec"]]
+            if ticket_data.get("resource_spec")
+            else [info["resource_spec"] for info in ticket_data["infos"]]
+        )
+        first_key_spec_id_map = {
+            role: spec["spec_id"]
+            for resource in resource_specs
+            for role, spec in resource.items()
+            if spec.get("spec_id")
+        }
+
+        spec_map = {
+            spec.spec_id: spec for spec in Spec.objects.filter(spec_id__in=list(first_key_spec_id_map.values()))
+        }
 
         # 将资源池申请的主机信息转换为单据参数
         resource_request_id, apply_data = resp["request_id"], resp["data"]
@@ -263,7 +277,7 @@ class ResourceApplyFlow(BaseTicketFlow):
         if source_spec_key_map.get(group_name):
             return spec_map[source_spec_key_map[group_name]]
         role = group_name.split("_", 1)[-1]
-        return spec_map.get(source_spec_key_map.get(role), "")
+        return spec_map.get(source_spec_key_map.get(role), None)
 
     def fetch_apply_params(self, ticket_data):
         """
