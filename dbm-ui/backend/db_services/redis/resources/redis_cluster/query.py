@@ -15,6 +15,8 @@ from django.db.models import Q, QuerySet
 from django.forms import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 
+from backend.configuration.constants import SystemSettingsEnum
+from backend.configuration.models.system import SystemSettings
 from backend.db_meta.api.cluster.rediscluster.handler import RedisClusterHandler
 from backend.db_meta.api.cluster.redisinstance.handler import RedisInstanceHandler
 from backend.db_meta.api.cluster.tendiscache.handler import TendisCacheClusterHandler
@@ -28,6 +30,7 @@ from backend.db_services.dbbase.resources import query
 from backend.db_services.dbbase.resources.query import ResourceList
 from backend.db_services.dbbase.resources.register import register_resource_decorator
 from backend.db_services.ipchooser.query.resource import ResourceQueryHelper
+from backend.db_services.redis.redis_dts.util import get_redis_type_by_cluster_type
 from backend.db_services.redis.resources.constants import SQL_QUERY_MASTER_SLAVE_STATUS
 from backend.utils.basic import dictfetchall
 
@@ -186,6 +189,7 @@ class RedisListRetrieveResource(query.ListRetrieveResource):
             cluster_spec = model_to_dict(spec) if spec else {}
             cluster_capacity = spec.capacity * machine_pair_cnt if spec else 0
 
+        delete_rate_configs = SystemSettings.get_setting_value(key=SystemSettingsEnum.REDIS_DELETE_RATE.value)
         # 集群额外信息
         cluster_extra_info = {
             "cluster_spec": cluster_spec,
@@ -196,6 +200,7 @@ class RedisListRetrieveResource(query.ListRetrieveResource):
             "cluster_shard_num": len(remote_infos[InstanceRole.REDIS_MASTER.value]),
             "machine_pair_cnt": machine_pair_cnt,
             "module_names": kwargs.get("redis_cluster_module_map", {}).get(cluster.id, []),
+            "delete_rate": delete_rate_configs[get_redis_type_by_cluster_type(cluster.cluster_type)],
         }
         cluster_info = super()._to_cluster_representation(
             cluster,
