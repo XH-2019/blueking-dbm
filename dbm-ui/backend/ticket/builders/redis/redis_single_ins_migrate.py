@@ -29,9 +29,9 @@ from backend.ticket.constants import TicketType
 class RedisSingleInsMigrateDetailSerializer(SkipToRepresentationMixin, serializers.Serializer):
     class RedisSingleInsMigrateItemSerializer(DisplayInfoSerializer):
         db_version = serializers.CharField(help_text=_("Redis版本"))
-        cluster_id = serializers.IntegerField(help_text=_("集群ID"))
         resource_spec = serializers.JSONField(help_text=_("资源规格"))
         old_nodes = serializers.JSONField(help_text=_("旧节点信息集合"))
+        src_cluster = serializers.ListField(child=serializers.JSONField(help_text=_("替换主机信息集合")))
 
     ip_source = serializers.ChoiceField(
         help_text=_("主机来源"), choices=IpSource.get_choices(), default=IpSource.RESOURCE_POOL
@@ -77,8 +77,6 @@ class RedisSingleInstanceApplyResourceParamBuilder(BaseOperateResourceParamBuild
         """补充实例迁移的信息"""
         for index, info in enumerate(ticket_data["infos"]):
             info.update(
-                src_master=f'{info["old_nodes"]["master"][0]["ip"]}:{info["old_nodes"]["master"][0]["port"]}',
-                src_slave=f'{info["old_nodes"]["slave"][0]["ip"]}:{info["old_nodes"]["slave"][0]["port"]}',
                 dest_master=f'{info["backend_group"][0]["master"]["ip"]}',
                 dest_slave=f'{info["backend_group"][0]["slave"]["ip"]}',
             )
