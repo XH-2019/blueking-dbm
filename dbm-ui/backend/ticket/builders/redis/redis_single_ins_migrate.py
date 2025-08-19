@@ -58,7 +58,7 @@ class RedisSingleInsMigrateBuilder(builders.FlowParamBuilder):
 
     def format_ticket_data(self):
         # 任取一个集群，补充云区域ID
-        cluster = Cluster.objects.get(id=self.ticket_data["src_cluster"][0]["cluster_id"])
+        cluster = Cluster.objects.get(id=self.ticket_data["infos"][0]["src_cluster"][0]["cluster_id"])
         self.ticket_data.update(bk_cloud_id=cluster.bk_cloud_id)
 
 
