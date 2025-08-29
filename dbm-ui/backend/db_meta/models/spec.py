@@ -38,7 +38,7 @@ class Spec(AuditedModel):
     spec_machine_type = models.CharField(max_length=64, choices=SpecMachineType.get_choices(), help_text=_("机器类型"))
     cpu = models.JSONField(null=True, help_text=_('cpu规格描述:{"min":1,"max":10}'), default=dict)
     mem = models.JSONField(null=True, help_text=_('mem规格描述:{"min":100,"max":1000}'), default=dict)
-    device_class = models.JSONField(null=True, help_text=_('实际机器机型: ["class1","class2"]'), default=dict)
+    device_class = models.JSONField(null=True, help_text=_('实际机器机型: ["class1","class2"]'), default=dict, blank=True)
     storage_spec = models.JSONField(
         help_text=_('存储磁盘需求配置:[{"mount_point":"/data","min":500,"max":1000,"type":"ssd"}]'), default=dict, null=True
     )
@@ -48,7 +48,7 @@ class Spec(AuditedModel):
     instance_num = models.IntegerField(default=0, help_text=_("实例数(es专属)"))
     # spider，redis集群专属
     qps = models.JSONField(default=dict, help_text=_('qps规格描述:{"min": 1, "max": 100}'), null=True)
-    biz_scope = models.JSONField(default=list, help_text=_("业务范围:[3,4,5]"), null=True)
+    biz_scope = models.JSONField(default=list, help_text=_("业务范围:[3,4,5]"), null=True, blank=True)
 
     class Meta:
         verbose_name = verbose_name_plural = _("资源规格(Spec)")
