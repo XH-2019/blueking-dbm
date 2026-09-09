@@ -27,6 +27,7 @@ package allanalysis_test
 import (
 	"testing"
 
+	"dbm-services/common/dbha-v2/internal/analysis/switcher"
 	"dbm-services/common/dbha-v2/pkg/dbtype"
 	"dbm-services/common/dbha-v2/pkg/storage/haprobe"
 
@@ -41,6 +42,7 @@ func TestAnalysisImportSetRegistersRedis(t *testing.T) {
 		haprobe.DbmMetadataClusterTypeTwemproxyRedis,
 		haprobe.DbmMetadataClusterTypeTwemproxyTendisSSD,
 		haprobe.DbmMetadataClusterTypePredixyTendisplusCluster,
+		haprobe.DbmMetadataClusterTypePredixyTendisplusInstance,
 		haprobe.DbmMetadataClusterTypePredixyRedisCluster,
 	}
 	for _, ct := range cases {
@@ -49,4 +51,13 @@ func TestAnalysisImportSetRegistersRedis(t *testing.T) {
 				ct, got, haprobe.DbTypeRedis)
 		}
 	}
+}
+
+func TestAnalysisImportSetRegistersRedisSwitcher(t *testing.T) {
+	for _, dt := range switcher.RegisteredDbTypes() {
+		if dt == haprobe.DbTypeRedis {
+			return
+		}
+	}
+	t.Fatal("allanalysis must import redis/switch to register the redis switcher")
 }
